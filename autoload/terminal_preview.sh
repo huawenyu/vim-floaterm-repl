@@ -24,7 +24,7 @@ case $filetype in
     ;;
 
   *)
-    echo -n "unknown"
+      $filetype $filepath $params
     ;;
 esac
 
