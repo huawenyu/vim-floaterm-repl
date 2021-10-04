@@ -53,6 +53,7 @@ function! floaterm_repl#run() range
 endfunction
 
 
+
 function! s:setupfloaterm_popup() abort
     nmap <silent><buffer> q :q<CR>
     nmap <silent><buffer> <ESC> :q<CR>
