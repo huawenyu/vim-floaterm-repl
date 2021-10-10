@@ -9,7 +9,7 @@ function! floaterm_repl#run() range
       let l:filerunner=g:floaterm_repl_runner
     endif
 
-    if l:filetype == 'markdown'
+    if l:filetype == 'markdown' || l:filetype == 'presenting_markdown'
         let startLine=search('```.','bn')
         let endLine =search('```$','n')
         if startLine!=0 && endLine !=0 && endLine>startLine
