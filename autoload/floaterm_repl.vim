@@ -24,9 +24,14 @@ function! floaterm_repl#run() range
                 let l:filetype=splitHeadder[0]
             end
 
-            let l:args=join(splitHeadder[1:-1])
-            let l:filepath='/tmp/vim_floaterm.'.l:filetype
-            let w= system("echo " .shellescape(query)." > " .l:filepath )
+            if l:filetype ==# 'vim'
+                call hw#eval#repl(lines)
+                return
+            else
+                let l:args=join(splitHeadder[1:-1])
+                let l:filepath='/tmp/vim_floaterm.'.l:filetype
+                let w= system("echo " .shellescape(query)." > " .l:filepath )
+            endif
         endif 
     else 
         let [line_start, column_start] = getpos("'<")[1:2]
