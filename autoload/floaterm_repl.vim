@@ -10,30 +10,47 @@ function! floaterm_repl#run() range
     endif
 
     if l:filetype == 'markdown' || l:filetype == 'presenting_markdown'
-        let startLine=search('```.','bn')
-        let endLine =search('```$','n')
-        if startLine!=0 && endLine !=0 && endLine>startLine
+        let curLine = line('.')
+        let l:line = getline('.')
+        if l:line[0:len('```') - 1] ==# '```'
+            let startLine = curLine
+        else
+            let startLine = search('```.', 'bn')
+        endif
+        let endLine = search('```$', 'n')
+
+        if startLine != 0 && endLine != 0 && endLine > startLine
             let lines = getline(startLine+1, endLine-1)
             if len(lines) == 0
                 return ''
             endif
-            let query=join(lines,"\n")
-            let mdHeader=trim(substitute(getline(startLine),'```','','g'))
-            let splitHeadder=split(mdHeader,' ')
-            if len(splitHeadder) >0
-                let l:filetype=splitHeadder[0]
+            "let query=join(lines,"\n")
+            let mdHeader = trim(substitute(getline(startLine),'```','','g'))
+
+            let splitCmds = split(mdHeader, ':')
+            if len(splitCmds) > 0
+                let mdHeader = splitCmds[0]
+            endif
+
+            let splitHeadder = split(mdHeader, ' ')
+            if len(splitHeadder) > 0
+                let l:filetype = splitHeadder[0]
             end
 
             if l:filetype ==# 'vim'
                 call hw#eval#repl(lines)
                 return
             else
-                let l:args=join(splitHeadder[1:-1])
-                let l:filepath='/tmp/vim_floaterm.'.l:filetype
-                let w= system("echo " .shellescape(query)." > " .l:filepath )
+                let l:args = join(splitHeadder[1:-1], ' ')
+                let l:cmds = join(splitCmds[1:-1], ':')
+                let l:filepath = '/tmp/vim_a.'..l:filetype
+
+                " fix escape some spcial charactor, e.g. '\n'
+                "let w= system("echo " .shellescape(query)." > " .l:filepath )
+                call writefile(lines, l:filepath)
             endif
-        endif 
-    else 
+        endif
+    else
         let [line_start, column_start] = getpos("'<")[1:2]
         let [line_end, column_end] = getpos("'>")[1:2]
         let lines = getline(line_start, line_end)
@@ -41,17 +58,18 @@ function! floaterm_repl#run() range
             echo "You need select code."
             return ''
         endif
-        let l:filepath='/tmp/vim_floaterm.'.l:filetype
+        let l:filepath='/tmp/vim_a.'.l:filetype
         silent execute "\'<,\'>w! " . l:filepath
-    endif 
+    endif
 
     silent execute ':FloatermKill! repl'
 
     if len(l:filetype)>0 && !empty(l:filepath)
         let l:command=':FloatermNew --name=repl --position=bottom --autoclose=0 --height=0.4 --width=0.9 --title='.filetype
-        let l:command= l:command. printf(" %s %s %s %s",l:filerunner,l:filetype,l:filepath,l:args)
+        let l:command= l:command. printf(" %s %s %s '%s' %s", l:filerunner, l:filetype, l:filepath, l:cmds, l:args)
         silent execute l:command
-        stopinsert
+        " fix the focus auto back to main-windows, cause can't exit from floatterm
+        "stopinsert
     endif
 
 
