@@ -1,4 +1,4 @@
-# 
+# REPL - Support markdown code fence
 Run repl code in the floating/popup window.
 
 ### demo
@@ -6,22 +6,110 @@ Run repl code in the floating/popup window.
 
 # Install
 
-This plugin depend on [vim-floaterm](https://github.com/voldikss/vim-floaterm) you need to install it first
+The plugin depend on [vim-floaterm](https://github.com/voldikss/vim-floaterm).
+The plugin fork from [vim-floaterm-repl](https://github.com/windwp/vim-floaterm).
 
 using vim-plug
 
 ``` vim
 Plug 'voldikss/vim-floaterm'
-Plug 'windwp/vim-floaterm-repl'
+Plug 'huawenyu/vim-floaterm-repl'
 ```
 
 # Usage
 * run a part of code in script file
-  > - Select code and run :FloatermRepl 
+  > - Select code and run `:FloatermRepl` 
 
 * run a block code in markdown file with argument passing
   > - Put cursors in codeblock and run :FloatermRepl (you don't need to select it).
-  > - Passing argument to script in codeheader [see](#demo) 
+  > - Passing argument to script in codeheader [see](#demo)~
+
+* the markdown code fence sample, run `:FloatermRepl`~
+
+```c
+/*
+https://linuxhint.com/using_mmap_function_linux/
+mmap used to Writing file
+
+size-of
+     file   map  write unmap
+     1024  2048  2048  2048
+
+>>> {fileout}  1024  2048  2048  2048
+>>> echo Normal
+
+>>> {fileout}  1024  2048  2048  3048
+>>> echo OK: unmap more size
+
+>>> {fileout}  1024  2048  2048  5048
+>>> echo ERROR: unmap > 4K page (Segmentation-fault)
+
+>>> {fileout}  1024  2048  4096  2048
+>>> echo OK: write < 4K-page
+
+>>> {fileout}  1024  2048  4097  2048
+>>> echo ERROR: write > 4K page (Bus error)
+
+>>> size {fileout}
+>>> ls -l {file}
+*/
+
+#include <stdio.h>
+#include <sys/mman.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+	const char *filepath = "/tmp/no_use_map.txt";
+	int file_size, map_size, write_size, unmap_size;
+	int ret = 0;
+
+	file_size  = atoi(argv[1]);
+	map_size   = atoi(argv[3]);
+	write_size = atoi(argv[3]);
+	unmap_size = atoi(argv[4]);
+
+	unlink(filepath);
+	int fd = open(filepath, O_RDWR | O_CREAT);
+	if (fd < 0) {
+		perror("file open fail");
+		goto out;
+	}
+
+	struct stat statbuf;
+	int err = fstat(fd, &statbuf);
+	if (err < 0) {
+		perror("file fstat fail");
+		goto out;
+	}
+	// statbuf.st_size
+
+	ftruncate(fd, file_size);
+	char *ptr = mmap(NULL, map_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+	if (ptr == MAP_FAILED) {
+		perror("Mapping Failed\n");
+		ret = 1;
+	}
+	close(fd);
+
+	for (int i=0; i < write_size; i++) {
+		ptr[i] = 'A';
+	}
+
+	err = munmap(ptr, unmap_size);
+	if (err != 0) {
+		perror("UnMapping Failed\n");
+		ret = 1;
+	}
+
+out:
+	unlink(filepath);
+	return ret;
+}
+```
 
 ## Key map
 ``` vim
@@ -32,6 +120,7 @@ vnoremap <leader>uc :FloatermRepl<CR>
 
 ## Configuration
 
+* current support python, go, c/c++, javascript
 * add support for your language by modify runner script
 
 ```vim

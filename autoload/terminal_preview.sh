@@ -5,8 +5,6 @@
 #echo "$@"
 filetype=$1
 filepath=$2
-cmds=$3
-shift
 shift
 shift
 params=$@
@@ -14,7 +12,6 @@ fileout="/tmp/vim_a.out"
 
 #echo "filepath=$filepath"
 #echo "params=$params"
-#echo "cmds=$cmds"
 #echo "===vim-floaterm-repl:terminal_preview.sh===="
 #echo "---------------------"
 
@@ -63,21 +60,17 @@ case $filetype in
                     FS=">>>"
                 }
                 /^>>>/ {
-                    if (NF == 2) {
-                        system("echo --------;")
-                        system("echo $ " fileout " " $NF ";")
-                        system(fileout " " $NF)
+                    gsub("{file}", filepath, $NF)
+                    gsub("{fileout}", fileout, $NF)
+
+                    is_echo = match($NF, /([ \t]*)echo([ \t]*)(.*)$/, arr)
+                    if (is_echo != 0) {
+                        #print "#" $NF
+                        print "#" arr[3]
                     }
-                    else if (NF == 3) {
-                        if ($2 == "echo") {
-                            print "##" $NF
-                        }
-                        else {
-                            gsub("{file}", filepath, $NF)
-                            gsub("{fileout}", fileout, $NF)
-                            system("echo;")
-                            system("echo $ " $NF ";" $NF)
-                        }
+                    else {
+                        system("echo;")
+                        system("echo $ " $NF ";" $NF)
                     }
                 }' $filepath
           ## if has command, do it
@@ -100,14 +93,14 @@ esac
 
 echo ""
 echo "====================="
-# Continue handle commands
-IFS=':'
-# Reading the split string into array
-read -ra cmdArr <<< "$cmds"
-for cmd in "${cmdArr[@]}"; do
-    cmd=${cmd//{fileout\}/$fileout}
-    cmd=${cmd//{file\}/$filepath}
-    echo "---[$cmd]---"
-    eval $cmd
-done
+## Continue handle commands
+#IFS=':'
+## Reading the split string into array
+#read -ra cmdArr <<< "$cmds"
+#for cmd in "${cmdArr[@]}"; do
+#    cmd=${cmd//{fileout\}/$fileout}
+#    cmd=${cmd//{file\}/$filepath}
+#    echo "---[$cmd]---"
+#    eval $cmd
+#done
 
