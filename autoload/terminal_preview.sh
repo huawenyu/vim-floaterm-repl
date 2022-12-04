@@ -53,6 +53,10 @@ case $filetype in
       # echo "LIBRARY_TRGT_CANV,CANV_MATCH<anything>"|awk -F "_TRGT_" '{print $NF}'
       # NF=2: testcase
       # NF=3: command
+      if ! grep -q "^>>> " $filepath; then
+          $fileout $params
+      fi
+
       if grep -q "^>>>" $filepath; then
           awk -v fileout=$fileout -v filepath=$filepath '
                 BEGIN {
@@ -65,14 +69,14 @@ case $filetype in
                         system(fileout " " $NF)
                     }
                     else if (NF == 3) {
-                        if ($2 == "cmd") {
+                        if ($2 == "echo") {
+                            print "##" $NF
+                        }
+                        else {
                             gsub("{file}", filepath, $NF)
                             gsub("{fileout}", fileout, $NF)
                             system("echo;")
                             system("echo $ " $NF ";" $NF)
-                        }
-                        else if ($2 == "echo") {
-                            print "##" $NF
                         }
                     }
                 }' $filepath
@@ -80,8 +84,6 @@ case $filetype in
           #if grep -q "^<<<" $filepath; then
           #    awk -v fileout=$fileout -v filepath=$filepath 'BEGIN {FS="<<<"}/^>>>/{gsub("{file}", filepath, $NF); gsub("{fileout}", fileout, $NF); system("echo " $NF ";" $NF)}' $filepath
           #fi
-      else
-          $fileout $params
       fi
     ;;
 
