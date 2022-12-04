@@ -6,8 +6,8 @@ Run repl code in the floating/popup window.
 
 # Install
 
-The plugin depend on [vim-floaterm](https://github.com/voldikss/vim-floaterm).
-The plugin fork from [vim-floaterm-repl](https://github.com/windwp/vim-floaterm).
+The plugin depend on [vim-floaterm](https://github.com/voldikss/vim-floaterm).~
+The plugin fork from [vim-floaterm-repl](https://github.com/windwp/vim-floaterm).~
 
 using vim-plug
 
@@ -22,11 +22,20 @@ Plug 'huawenyu/vim-floaterm-repl'
 
 * run a block code in markdown file with argument passing
   > - Put cursors in codeblock and run :FloatermRepl (you don't need to select it).
-  > - Passing argument to script in codeheader [see](#demo)~
+  > - Passing argument to script in codeheader [see](#demo)
 
-* the markdown code fence sample, run `:FloatermRepl`~
+* the markdown code fence sample, run `:FloatermRepl`
+  - support auto scan & eval the shell command
+  - workflow:
+    1. the plugin auto copy the code-fence into a independent `{file}`, extension with the filetype,
+    2. parse the `{file}` to the `runner.sh`, can be customize by `g:floaterm_repl_runner`,
+    3. the `runner.sh` will simple parse the `{file}`, take action according to the filetype,
+    4. the `runner.sh` auto scan & eval all command beginswith `>>>,`
+  - there have two builtin variables:
+    + `{file}`     the file-full-path, i.e. `/tmp/vim_a.c`
+    + `{fileout}`  the make output binary file, i.e. `/tmp/vim_a.out`
 
-```c
+```c  Tryme - put the cursor, and trigger the map to call `:FloatermRepl`
 /*
 https://linuxhint.com/using_mmap_function_linux/
 mmap used to Writing file
