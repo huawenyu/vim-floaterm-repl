@@ -35,10 +35,11 @@ Plug 'huawenyu/vim-floaterm-repl'
     + `{file}`     the file-full-path, i.e. `/tmp/vim_a.c`
     + `{fileout}`  the make output binary file, i.e. `/tmp/vim_a.out`
 
-```c  Tryme - put the cursor, and trigger the map to call `:FloatermRepl`
+```c
 /*
+Tryme - put the cursor, and trigger the map to call `:FloatermRepl`
+
 https://linuxhint.com/using_mmap_function_linux/
-mmap used to Writing file
 
 size-of
      file   map  write unmap
