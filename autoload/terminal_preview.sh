@@ -35,6 +35,11 @@ case $filetype in
       go run $filepath $params
     ;;
 
+  rust )
+      filename=$(basename $filepath .rust)
+      rustc $filepath $params && ./$filename
+    ;;
+
   expect | Expect)
       expect $filepath $params
     ;;
@@ -45,6 +50,36 @@ case $filetype in
 
   c | C)
       gcc -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
+
+    ######################################################
+    ###### For example, put our testcase as comment like this
+    ######################################################
+	#/*
+	#https://linuxhint.com/using_mmap_function_linux/
+	#mmap used to Writing file
+
+	#size-of
+	#	 file   map  write unmap
+	#	 1024  2048  2048  2048
+
+	#>>> {fileout}  1024  2048  2048  2048
+	#>>> echo Normal
+
+	#>>> {fileout}  1024  2048  2048  3048
+	#>>> echo OK: unmap more size
+
+	#>>> {fileout}  1024  2048  2048  5048
+	#>>> echo ERROR: unmap > 4K page (Segmentation-fault)
+
+	#>>> {fileout}  1024  2048  4096  2048
+	#>>> echo OK: write < 4K-page
+
+	#>>> {fileout}  1024  2048  4097  2048
+	#>>> echo ERROR: write > 4K page (Bus error)
+
+	#>>> size {fileout}
+	#>>> ls -l {file}
+	#*/
 
       # If code-fence provide test-data, use it, otherwise run directly
       # echo "LIBRARY_TRGT_CANV,CANV_MATCH<anything>"|awk -F "_TRGT_" '{print $NF}'
