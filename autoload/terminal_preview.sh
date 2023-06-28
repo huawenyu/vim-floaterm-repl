@@ -50,6 +50,7 @@ case $filetype in
 
   c | C)
       gcc -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
+      #gcc -pthread -std=c11 -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
 
     ######################################################
     ###### For example, put our testcase as comment like this
