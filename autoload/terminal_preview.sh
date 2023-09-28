@@ -49,6 +49,7 @@ case $filetype in
     ;;
 
   c | C)
+      rm -fr $fileout
       gcc -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
       #gcc -pthread -std=c11 -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
 
