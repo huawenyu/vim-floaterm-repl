@@ -48,6 +48,10 @@ case $filetype in
       python3 $filepath $params
     ;;
 
+  awk )
+      LC_ALL=C awk -f $filepath $params
+    ;;
+
   c | C)
       rm -fr $fileout
       gcc -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
