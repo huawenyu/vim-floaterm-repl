@@ -116,7 +116,7 @@ case $filetype in
       rustc $filepath $params && ./$filename
     ;;
 
-  expect | Expect)
+  tcl | expect | Expect)
       expect $filepath $params
     ;;
 
