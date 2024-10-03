@@ -130,7 +130,7 @@ case $filetype in
 
   c | C)
       rm -fr $fileout
-      gcc -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
+      gcc -pthread -lrt -lm -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
       #gcc -pthread -std=c11 -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
 
       #$fileout $params
@@ -138,7 +138,7 @@ case $filetype in
     ;;
 
   cpp | cxx | CPP | CXX)
-      g++ -pthread -lrt -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
+      g++ -pthread -lrt -lm -g -O0 -finstrument-functions -fms-extensions -o $fileout $filepath
 
       #$fileout $params
       try_run_me
