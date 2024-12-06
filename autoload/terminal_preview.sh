@@ -112,8 +112,10 @@ case $filetype in
     ;;
 
   rust )
-      filename=$(basename $filepath .rust)
-      rustc $filepath $params && ./$filename
+      # filename=$(basename $filepath .rust)
+      # rustc $filepath $params && ./$filename
+      cp $filepath $fileout
+      try_run_me rust-script
     ;;
 
   tcl | expect | Expect)
