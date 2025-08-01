@@ -9,7 +9,7 @@ function! floaterm_repl#run() range
       let l:filerunner=g:floaterm_repl_runner
     endif
 
-    if l:filetype == 'markdown' || l:filetype == 'presenting_markdown'
+    if l:filetype == 'markdown' || l:filetype == 'presenting_markdown' || l:filetype == 'vimwiki'
         let curLine = line('.')
         let l:line = getline('.')
         if l:line[0:len('```') - 1] ==# '```'
